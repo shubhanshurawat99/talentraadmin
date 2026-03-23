@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TalentDesk — Login</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    /* Background grid pattern */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* Amber glow blob */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(245,166,35,0.06) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .login-wrap {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 400px;
+      padding: 20px;
+      animation: slideUp 0.45s cubic-bezier(0.34,1.3,0.64,1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 36px 32px 32px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,166,35,0.04);
+    }
+
+    .login-logo {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 28px;
+    }
+    .login-logo-mark {
+      width: 36px; height: 36px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+    .login-logo-mark span {
+      background: var(--amber);
+      border-radius: 3px;
+      display: block;
+    }
+    .login-logo-mark span:nth-child(2),
+    .login-logo-mark span:nth-child(3) { opacity: 0.4; }
+
+    .login-logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .login-logo-text sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 400;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+
+    .login-headline {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .login-headline em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--amber);
+    }
+    .login-sub {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+    }
+
+    .login-form { display: flex; flex-direction: column; gap: 14px; }
+
+    .login-field { display: flex; flex-direction: column; gap: 5px; }
+    .login-field label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .login-input-wrap { position: relative; }
+    .login-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px 10px 38px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .login-input:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(245,166,35,0.08);
+    }
+    .login-input-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--text-faint); font-size: 0.9rem; pointer-events: none;
+      transition: color 0.2s;
+    }
+    .login-input:focus ~ .login-input-icon { color: var(--amber); }
+
+    /* password toggle */
+    .pwd-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-faint); font-size: 0.85rem;
+      padding: 2px;
+      transition: color 0.2s;
+    }
+    .pwd-toggle:hover { color: var(--text-dim); }
+
+    .login-error {
+      display: none;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: var(--red);
+      font-size: 0.8rem;
+      align-items: center;
+      gap: 8px;
+    }
+    .login-error.show { display: flex; animation: fadeIn 0.2s ease; }
+
+    .login-btn {
+      width: 100%;
+      background: var(--amber);
+      border: none;
+      border-radius: 6px;
+      padding: 11px;
+      color: #000;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 4px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      letter-spacing: 0.02em;
+    }
+    .login-btn:hover:not(:disabled) { background: #f9b84a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,166,35,0.25); }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .login-btn .btn-spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .login-footer {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-faint);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+
+      <div class="login-logo">
+        <div class="login-logo-mark">
+          <span></span><span></span>
+          <span></span><span></span>
+        </div>
+        <div class="login-logo-text">TalentDesk <sub>Admin</sub></div>
+      </div>
+
+      <div class="login-headline">Welcome <em>back</em></div>
+      <div class="login-sub">Sign in to access the recruitment dashboard</div>
+
+      <div class="login-form">
+
+        <div id="loginError" class="login-error">
+          <span>⚠</span>
+          <span id="loginErrorMsg">Invalid credentials</span>
+        </div>
+
+        <div class="login-field">
+          <label for="loginUsername">Username</label>
+          <div class="login-input-wrap">
+            <input
+              class="login-input" id="loginUsername"
+              type="text" placeholder="admin"
+              autocomplete="username" autocapitalize="none"
+            />
+            <span class="login-input-icon">◉</span>
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="loginPassword">Password</label>
+          <div class="login-input-wrap">
+            <input
+              class="login-input" id="loginPassword"
+              type="password" placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <span class="login-input-icon">🔑</span>
+            <button class="pwd-toggle" id="pwdToggle" type="button" onclick="togglePwd()" title="Show/hide password">
+              👁
+            </button>
+          </div>
+        </div>
+
+        <button class="login-btn" id="loginBtn" onclick="doLogin()">
+          Sign In →
+        </button>
+
+      </div>
+
+      <div class="login-footer">
+        Admin access only &nbsp;·&nbsp; No signup available
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5000/api';
+
+    // If already logged in, redirect
+    if (localStorage.getItem('td_token')) {
+      window.location.href = '/';
+    }
+
+    function togglePwd() {
+      const inp = document.getElementById('loginPassword');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function showError(msg) {
+      document.getElementById('loginErrorMsg').textContent = msg;
+      document.getElementById('loginError').classList.add('show');
+    }
+
+    function hideError() {
+      document.getElementById('loginError').classList.remove('show');
+    }
+
+    async function doLogin() {
+      const btn = document.getElementById('loginBtn');
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!username || !password) {
+        showError('Please enter both username and password.');
+        return;
+      }
+
+      hideError();
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-spinner"></span> Signing in…';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          showError(data.error || 'Invalid credentials');
+          btn.disabled = false;
+          btn.innerHTML = 'Sign In →';
+          return;
+        }
+
+        localStorage.setItem('td_token', data.token);
+        localStorage.setItem('td_admin', JSON.stringify(data.admin));
+        window.location.href = '/';
+
+      } catch (e) {
+        showError('Cannot reach server. Is the backend running?');
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In →';
+      }
+    }
+
+    // Enter key support
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+  </script>
+</body>
+</html>

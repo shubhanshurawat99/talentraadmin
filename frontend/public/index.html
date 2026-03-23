@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TalentDesk — Recruitment Platform</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-logo">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <rect x="1" y="1" width="9" height="9" rx="2" fill="#f5a623"/>
+      <rect x="12" y="1" width="9" height="9" rx="2" fill="#f5a623" opacity="0.5"/>
+      <rect x="1" y="12" width="9" height="9" rx="2" fill="#f5a623" opacity="0.5"/>
+      <rect x="12" y="12" width="9" height="9" rx="2" fill="#f5a623"/>
+    </svg>
+    TalentDesk <span>/ Admin</span>
+  </div>
+
+  <div class="header-spacer"></div>
+
+  <div class="view-toggle">
+    <button class="toggle-btn" id="toggle-candidates" onclick="switchView('candidates')">Candidates</button>
+    <button class="toggle-btn" id="toggle-recruiters" onclick="switchView('recruiters')">Recruiters</button>
+  </div>
+
+  <div class="header-user">
+    <div class="header-avatar" id="headerAvatar">A</div>
+    <span class="header-username" id="headerUsername">Admin</span>
+    <button class="logout-btn" onclick="logout()" title="Sign out">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- ─── CANDIDATES PAGE ─── -->
+  <div class="page" id="page-candidates">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Candidate <em>Responses</em></div>
+        <div class="page-count" id="cCount">Loading…</div>
+      </div>
+      <button class="btn btn-primary" onclick="openAddCandidateModal()">
+        <span>＋</span> Add Candidate
+      </button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="cTotal">—</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="cPending">—</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="cShortlisted">—</div>
+        <div class="stat-label">Shortlisted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="cRejected">—</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="cSearch" placeholder="Search name, email, company, skill…" />
+      </div>
+      <select class="filter-select" id="cStatusFilter" onchange="loadCandidates()">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="reviewed">Reviewed</option>
+        <option value="shortlisted">Shortlisted</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <select class="filter-select" id="cExpFilter" onchange="loadCandidates()">
+        <option value="">All Experience</option>
+        <option value="0-1">0–1 yrs</option>
+        <option value="1-3">1–3 yrs</option>
+        <option value="3-5">3–5 yrs</option>
+        <option value="5-8">5–8 yrs</option>
+        <option value="8-12">8–12 yrs</option>
+        <option value="12+">12+ yrs</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="loadCandidates()">↻ Refresh</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Candidate</th>
+            <th>Phone</th>
+            <th>Location</th>
+            <th>Company</th>
+            <th>Exp.</th>
+            <th>Skills</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="candidatesTbody">
+          <tr><td colspan="8"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── RECRUITERS PAGE ─── -->
+  <div class="page" id="page-recruiters">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Recruiter <em>Responses</em></div>
+        <div class="page-count" id="rCount">Loading…</div>
+      </div>
+      <button class="btn btn-primary" onclick="openAddRecruiterModal()">
+        <span>＋</span> Add Recruiter
+      </button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="rTotal">—</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="rPending">—</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="rContacted">—</div>
+        <div class="stat-label">Contacted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="rClosed">—</div>
+        <div class="stat-label">Closed</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="rSearch" placeholder="Search company, contact, email…" />
+      </div>
+      <select class="filter-select" id="rStatusFilter" onchange="loadRecruiters()">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="contacted">Contacted</option>
+        <option value="closed">Closed</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost btn-sm" onclick="loadRecruiters()">↻ Refresh</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Contact</th>
+            <th>Phone</th>
+            <th>Message</th>
+            <th style="text-align:center">Candidates</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="recruitersTbody">
+          <tr><td colspan="7"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="detailModalTitle"></span>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="detailContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('detailModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Candidate Form Modal -->
+<div class="modal-overlay" id="cFormModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="cFormTitle">Add Candidate</span>
+      <button class="modal-close" onclick="closeModal('cFormModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="cForm" onsubmit="event.preventDefault()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input class="form-input" id="cName" placeholder="Rohan Sharma" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" id="cEmail" type="email" placeholder="rohan@example.com" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone *</label>
+            <input class="form-input" id="cPhone" placeholder="+91 98765 43210" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location *</label>
+            <input class="form-input" id="cLocation" placeholder="Bangalore, India" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Current Company *</label>
+            <input class="form-input" id="cCompany" placeholder="Infosys Ltd." required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Current CTC *</label>
+            <input class="form-input" id="cCTC" placeholder="12 LPA" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Experience *</label>
+            <select class="form-select" id="cExperience" required>
+              <option value="">Select range</option>
+              <option value="0-1">0–1 years</option>
+              <option value="1-3">1–3 years</option>
+              <option value="3-5">3–5 years</option>
+              <option value="5-8">5–8 years</option>
+              <option value="8-12">8–12 years</option>
+              <option value="12+">12+ years</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resume Link</label>
+            <input class="form-input" id="cResumeLink" placeholder="https://drive.google.com/…" />
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Skills (comma-separated)</label>
+            <input class="form-input" id="cSkills" placeholder="React, Node.js, MongoDB, TypeScript" />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('cFormModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCandidateForm()">Save Candidate</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recruiter Form Modal -->
+<div class="modal-overlay" id="rFormModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="rFormTitle">Add Recruiter</span>
+      <button class="modal-close" onclick="closeModal('rFormModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="rForm" onsubmit="event.preventDefault()">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">Company Name *</label>
+            <input class="form-input" id="rCompany" placeholder="Tech Corp Pvt. Ltd." required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Person *</label>
+            <input class="form-input" id="rContactPerson" placeholder="Priya Mehta" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" id="rEmail" type="email" placeholder="priya@techcorp.com" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone *</label>
+            <input class="form-input" id="rPhone" placeholder="+91 99887 76655" required />
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Message / Requirements *</label>
+            <textarea class="form-textarea" id="rMessage" placeholder="Looking for 3+ years React developers for a product role in Bangalore…" required></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('rFormModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRecruiterForm()">Save Recruiter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
