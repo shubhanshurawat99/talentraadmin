@@ -1,5 +1,5 @@
 // ── CONFIG ──
-const API_BASE = 'https://talentraadminbackend.onrender.com';
+const API_BASE = 'https://talentraadminbackend.onrender.com/api';
 
 // ── AUTH GUARD ──
 function getToken() { return localStorage.getItem('td_token'); }
